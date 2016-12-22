@@ -31,9 +31,13 @@ In this step, I used the OpenCV functions `findChessboardCorners` and `drawChess
 
 Next, the locations of the chessboard corners were used as input to the OpenCV function `calibrateCamera` to compute the camera calibration matrix and distortion coefficients. 
 
+![Corners Image] (https://github.com/JustinHeaton/Advanced-Lane-Finding/blob/master/images/corners.png)
+
 Finally, the camera calibration matrix and distortion coefficients were used with the OpenCV function `undistort` to remove distortion from highway driving images.
 
-![Corners Image] (https://github.com/JustinHeaton/Advanced-Lane-Finding/blob/master/images/corners.png)
+![Undistorted Image] (https://github.com/JustinHeaton/Advanced-Lane-Finding/blob/master/images/undistorted.png)
+
+Notice that if you compare the two images, especially around the edges, there are definitely differences between the original and undistorted image.
 
 ### Step 2: Perspective Transform
 The goal of this step is to transform the undistorted image to a "birds eye view" of the road which focuses only on the lane lines and displays them in such a way that they appear to be relatively parallel to eachother (as opposed to the converging lines you would normally see). To achieve the perspective transformation I first applied the OpenCV functions `getPerspectiveTransform` and `warpPerspective` which take a matrix of four source points on the undistorted image and remaps them to four destination points on the warped image. The source and destination points were selected manually by visualizing the locations of the lane lines on a series of images.
