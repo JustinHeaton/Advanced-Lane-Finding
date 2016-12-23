@@ -21,7 +21,6 @@ The pipeline created for this project processes images in the following steps:
 ### Code:
 This project requires python 3.5 and the following dependencies:
 - [NumPy] (http://www.numpy.org/)
-- [Pandas] (http://pandas.pydata.org/)
 - [matplotlib] (http://matplotlib.org/)
 - [OpenCV] (http://opencv.org/)
 - [MoviePy] (http://zulko.github.io/moviepy/)
@@ -29,29 +28,29 @@ This project requires python 3.5 and the following dependencies:
 ### Step 1: Distortion Correction
 In this step, I used the OpenCV functions `findChessboardCorners` and `drawChessboardCorners` to identify the locations of corners on a series of pictures of a chessboard taken from different angles.
 
-Next, the locations of the chessboard corners were used as input to the OpenCV function `calibrateCamera` to compute the camera calibration matrix and distortion coefficients. 
-
 ![Corners Image] (https://github.com/JustinHeaton/Advanced-Lane-Finding/blob/master/images/corners.png)
+
+Next, the locations of the chessboard corners were used as input to the OpenCV function `calibrateCamera` to compute the camera calibration matrix and distortion coefficients. 
 
 Finally, the camera calibration matrix and distortion coefficients were used with the OpenCV function `undistort` to remove distortion from highway driving images.
 
 ![Undistorted Image] (https://github.com/JustinHeaton/Advanced-Lane-Finding/blob/master/images/undistorted.png)
 
-Notice that if you compare the two images, especially around the edges, there are definitely differences between the original and undistorted image.
+Notice that if you compare the two images, especially around the edges, there are obvious differences between the original and undistorted image, indicating that distortion has been removed from the original image.
 
 ### Step 2: Perspective Transform
-The goal of this step is to transform the undistorted image to a "birds eye view" of the road which focuses only on the lane lines and displays them in such a way that they appear to be relatively parallel to eachother (as opposed to the converging lines you would normally see). To achieve the perspective transformation I first applied the OpenCV functions `getPerspectiveTransform` and `warpPerspective` which take a matrix of four source points on the undistorted image and remaps them to four destination points on the warped image. The source and destination points were selected manually by visualizing the locations of the lane lines on a series of images.
+The goal of this step is to transform the undistorted image to a "birds eye view" of the road which focuses only on the lane lines and displays them in such a way that they appear to be relatively parallel to eachother (as opposed to the converging lines you would normally see). To achieve the perspective transformation I first applied the OpenCV functions `getPerspectiveTransform` and `warpPerspective` which take a matrix of four source points on the undistorted image and remaps them to four destination points on the warped image. The source and destination points were selected manually by visualizing the locations of the lane lines on a series of test images.
 
 ![Birds Eye Image] (https://github.com/JustinHeaton/Advanced-Lane-Finding/blob/master/images/warped.png)
 
 ### Step 3: Apply Binary Thresholds
-In this step I attempted to convert the warped image to different color spaces on create binary thresholded images which highlight only the lane lines and ignore everything else. 
+In this step I attempted to convert the warped image to different color spaces and create binary thresholded images which highlight only the lane lines and ignore everything else. 
 I found that the following color channels and thresholds did a good job of identifying the lane lines in the provided test images:
 - The S Channel from the HLS color space, with a min threshold of 180 and a max threshold of 255, did a fairly good job of identifying both the white and yellow lane lines, but did not pick up 100% of the pixels in either one.
 - The U Channel from the YUV color space, with a min threshold of 110 and a max threshold of 255, did an almost perfect job of picking up the yellow lane lines, but completely ignored the white lines.
 - The Blue channel from the RGB color space, with a min threshold of 220 and an upper threshold of 255, did a better job than the S channel in identifying the white lines, but completely ignored the yellow lines. 
 
-I chose to create a combined binary threshold based on the three above mentioned binary thresholds, to create one thresholded images which does a great job of highlighting almost all of the white and yellow lane lines.
+I chose to create a combined binary threshold based on the three above mentioned binary thresholds, to create one thresholded image which does a great job of highlighting almost all of the white and yellow lane lines.
 
 ![Binary Thresholds] (https://github.com/JustinHeaton/Advanced-Lane-Finding/blob/master/images/thresholds.png)
 
@@ -63,7 +62,7 @@ At this point I was able to use the combined binary image to isolate only the pi
 After fitting the polynomials I was able to calculate the position of the vehicle with respect to center with the following calculations:
 - Calculated the average of the x intercepts from each of the two polynomials `position = (rightx_int+leftx_int)/2`
 - Calculated the distance from center by taking the absolute value of the vehicle position minus the halfway point along the horizontal axis `distance_from_center = abs(image_width/2 - position)`
-- If the horizontal position of the car was greater than `(image_width/2` than the car was considered to be left of center, otherwise right of center.
+- If the horizontal position of the car was greater than `image_width/2` than the car was considered to be left of center, otherwise right of center.
 - Finally, the distance from center was converted from pixels to meters by multiplying the number of pixels by `3.7/700`.
 
 Next I used the following code to calculate the radius of curvature for each lane line in meters:
@@ -80,6 +79,24 @@ right_curverad = ((1 + (2*right_fit_cr[0]*np.max(lefty) + right_fit_cr[1])**2)**
 The final radius of curvature was taken by average the left and right curve radiuses.
 
 ### Step 7: Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
-The final step in processing the images was to plot the polynomial back on to the warped image, fill the space between the polynomials to highlight the lane that the car is in, use another perspective trasformation to unwarp the image from birds eye back to its original perspective, and print the distance from center and radius of curvature on to the final annotated image.
+The final step in processing the images was to plot the polynomials on to the warped image, fill the space between the polynomials to highlight the lane that the car is in, use another perspective trasformation to unwarp the image from birds eye back to its original perspective, and print the distance from center and radius of curvature on to the final annotated image.
 
 ![Filled Image] (https://github.com/JustinHeaton/Advanced-Lane-Finding/blob/master/images/filled.png)
+
+## Video Processing Pipeline:
+After establishing a pipeline to process still images, the final step was to expand the pipeline to process videos frame-by-frame, to simulate what it would be like to process an image stream in real time on an actual vehicle. 
+
+My goal in developing a video processing pipeline was to create as smooth of an output as possible. To achieve this, I created a class for each of the left and right lane lines and stored features of each lane for averaging across frames.
+
+The video pipeline first checks whether or not the lane was detected in the previous frame. If it was, then it only checks for lane pixels in close proximity to the polynomial calculated in the previous frame. This way, the pipeline does not need to scan the entire image, and the pixels detected have a high confidence of belonging to the lane line because they are based on the location of the lane in the previous frame. 
+
+If at any time, the pipeline fails to detect lane pixels based on the the previous frame, it will go back in to blind search mode and scan the entire binary image for nonzero pixels to represent the lanes.
+
+In order to make the output smooth I chose to average the coefficients of the polynomials for each lane line over a span of 5 frames. The gif below is the result of my pipeline running on the test video provided for the project.
+
+|Final Result| 
+|------------| 
+|![Final Result Gif] (https://github.com/JustinHeaton/Advanced-Lane-Finding/blob/master/images/project_vid.gif)|
+
+### Possible Limitations:
+The video pipeline developed in this project did a fairly robust job of detecting the lane lines in the test video provided for the project, which shows a road in basically ideal conditions, with fairly distinct lane lines, and on a clear day. I have not however tested the pipeline on additional video streams which could challenge the pipeline with varying lighting and weather conditions, road quality, and faded lane lines. For further research I plan to record some additional video streams of my own driving in various conditions and continue to refine my pipeline to work in more varied environments.    
