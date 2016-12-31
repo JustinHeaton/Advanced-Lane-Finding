@@ -52,7 +52,7 @@ I found that the following color channels and thresholds did a good job of ident
 
 I chose to create a combined binary threshold based on the three above mentioned binary thresholds, to create one thresholded image which does a great job of highlighting almost all of the white and yellow lane lines.
 
-![Binary Thresholds] (https://github.com/JustinHeaton/Advanced-Lane-Finding/blob/master/images/thresholds.png)
+![Binary Thresholds] (https://github.com/JustinHeaton/Advanced-Lane-Finding/blob/master/images/thresholds1.png)
 
 ### Steps 4, 5 and 6: Fitting a polynomial to the lane lines, calculating vehicle position and radius of curvature:
 At this point I was able to use the combined binary image to isolate only the pixels belonging to lane lines. The next step was to fit a polynomial to each lane line, which was done by:
