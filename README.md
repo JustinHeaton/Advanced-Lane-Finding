@@ -46,11 +46,11 @@ The goal of this step is to transform the undistorted image to a "birds eye view
 ### Step 3: Apply Binary Thresholds
 In this step I attempted to convert the warped image to different color spaces and create binary thresholded images which highlight only the lane lines and ignore everything else. 
 I found that the following color channels and thresholds did a good job of identifying the lane lines in the provided test images:
-- The S Channel from the HLS color space, with a min threshold of 180 and a max threshold of 255, did a fairly good job of identifying both the white and yellow lane lines, but did not pick up 100% of the pixels in either one.
-- The U Channel from the YUV color space, with a min threshold of 110 and a max threshold of 255, did an almost perfect job of picking up the yellow lane lines, but completely ignored the white lines.
-- The Blue channel from the RGB color space, with a min threshold of 220 and an upper threshold of 255, did a better job than the S channel in identifying the white lines, but completely ignored the yellow lines. 
+- The S Channel from the HLS color space, with a min threshold of 180 and a max threshold of 255, did a fairly good job of identifying both the white and yellow lane lines, but did not pick up 100% of the pixels in either one, and had a tendency to get distracted by shadows on the road.
+- The L Channel from the LUV color space, with a min threshold of 225 and a max threshold of 255, did an almost perfect job of picking up the yellow lane lines, but completely ignored the white lines.
+- The B channel from the Lab color space, with a min threshold of 155 and an upper threshold of 200, did a better job than the S channel in identifying the white lines, but completely ignored the yellow lines. 
 
-I chose to create a combined binary threshold based on the three above mentioned binary thresholds, to create one thresholded image which does a great job of highlighting almost all of the white and yellow lane lines.
+I chose to create a combined binary threshold based on the three above mentioned binary thresholds, to create one combination thresholded image which does a great job of highlighting almost all of the white and yellow lane lines.
 
 ![Binary Thresholds] (https://github.com/JustinHeaton/Advanced-Lane-Finding/blob/master/images/thresholds1.png)
 
@@ -92,7 +92,7 @@ The video pipeline first checks whether or not the lane was detected in the prev
 
 If at any time, the pipeline fails to detect lane pixels based on the the previous frame, it will go back in to blind search mode and scan the entire binary image for nonzero pixels to represent the lanes.
 
-In order to make the output smooth I chose to average the coefficients of the polynomials for each lane line over a span of 5 frames. The gif below is the result of my pipeline running on the test video provided for the project.
+In order to make the output smooth I chose to average the coefficients of the polynomials for each lane line over a span of 10 frames. The gif below is the result of my pipeline running on the test video provided for the project.
 
 |Final Result| 
 |------------| 
