@@ -56,7 +56,8 @@ I chose to create a combined binary threshold based on the three above mentioned
 
 ### Steps 4, 5 and 6: Fitting a polynomial to the lane lines, calculating vehicle position and radius of curvature:
 At this point I was able to use the combined binary image to isolate only the pixels belonging to lane lines. The next step was to fit a polynomial to each lane line, which was done by:
-- Identifying all non zero pixels in the image using the numpy function `numpy.nonzero()`.
+- Identifying peaks in a histogram of the image to determine location of lane lines.
+- Identifying all non zero pixels around histogram peaks using the numpy function `numpy.nonzero()`.
 - Fitting a polynomial to each lane using the numpy function `numpy.polyfit()`.
 
 After fitting the polynomials I was able to calculate the position of the vehicle with respect to center with the following calculations:
