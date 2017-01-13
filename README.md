@@ -76,6 +76,8 @@ left_curverad = ((1 + (2*left_fit_cr[0]*np.max(lefty) + left_fit_cr[1])**2)**1.5
 right_curverad = ((1 + (2*right_fit_cr[0]*np.max(lefty) + right_fit_cr[1])**2)**1.5) \
                                 /np.absolute(2*right_fit_cr[0])
 ```
+*Source:* http://www.intmath.com/applications-differentiation/8-radius-curvature.php
+
 The final radius of curvature was taken by average the left and right curve radiuses.
 
 ### Step 7: Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
