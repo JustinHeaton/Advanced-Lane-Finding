@@ -10,13 +10,13 @@ The goal of this project is to develop a pipeline to process a video stream from
 - The radius of curvature of the road
 
 The pipeline created for this project processes images in the following steps:
-- Step 1: Apply distortion correction using a calculated camera calibration matrix and distortion coefficients.
-- Step 2: Apply a perspective transformation to warp the image to a birds eye view perspective of the lane lines.
-- Step 3: Apply color thresholds to create a binary image which isolates the pixels representing lane lines.
-- Step 4: Identify the lane line pixels and fit polynomials to the lane boundaries.
-- Step 5: Determine curvature of the lane and vehicle position with respect to center.
-- Step 6: Warp the detected lane boundaries back onto the original image.
-- Step 7: Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
+- **Step 1**: Apply distortion correction using a calculated camera calibration matrix and distortion coefficients.
+- **Step 2**: Apply a perspective transformation to warp the image to a birds eye view perspective of the lane lines.
+- **Step 3**: Apply color thresholds to create a binary image which isolates the pixels representing lane lines.
+- **Step 4**: Identify the lane line pixels and fit polynomials to the lane boundaries.
+- **Step 5**: Determine curvature of the lane and vehicle position with respect to center.
+- **Step 6**: Warp the detected lane boundaries back onto the original image.
+- **Step 7**: Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
 ### Code:
 This project requires python 3.5 and the following dependencies:
